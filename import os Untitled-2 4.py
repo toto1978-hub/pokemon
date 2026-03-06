@@ -13,7 +13,7 @@ from typing import List, Dict, Any, Tuple
 MP_SOLUTIONS_AVAILABLE = hasattr(mp, "solutions") and hasattr(mp.solutions, "face_mesh")
 
 
-ASSET_DIR = "assets"
+ASSET_DIR = os.path.abspath("assets")
 
 
 @dataclass
@@ -537,10 +537,15 @@ def translate_moods(values: List[str]) -> str:
 def img_tag_or_fallback(result: Dict[str, Any], class_name: str) -> str:
     path = result.get("image_path", "")
     if path and os.path.exists(path):
-        # Gradio 6.x allowed_paths (assets/) 기반 서빙:
-        # 절대경로 대신 파일의 상대경로(assets/filename.png)를 직접 사용
-        filename = os.path.basename(path)
-        return f'<img src="/file=assets/{filename}" class="{class_name}" alt="{result["name"]}">'
+        try:
+            with open(path, "rb") as f:
+                img_data = f.read()
+            b64_str = base64.b64encode(img_data).decode()
+            ext = os.path.splitext(path)[1][1:] # png, jpg 등
+            return f'<img src="data:image/{ext};base64,{b64_str}" class="{class_name}" alt="{result["name"]}">'
+        except Exception as e:
+            print(f"Error encoding image {path}: {e}")
+            pass
     return f'<div class="{class_name} fallback">{result.get("emoji","⭐")}</div>'
 
 
