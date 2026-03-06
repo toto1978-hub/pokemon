@@ -1,10 +1,12 @@
 import os
+print("Importing libraries...")
 import cv2
 import gradio as gr
 import mediapipe as mp
 import numpy as np
 import base64
 import random
+print("Libraries imported.")
 from dataclasses import dataclass
 from typing import List, Dict, Any, Tuple
 
@@ -1036,6 +1038,7 @@ with gr.Blocks(title="사람 얼굴 ↔ 포켓몬 매칭 데모") as demo:
 demo.launch(
     allowed_paths=[ASSET_DIR], 
     css=CUSTOM_CSS,
-    server_name="127.0.0.1",
-    server_port=7865
+    server_name="0.0.0.0",
+    server_port=7865,
+    share=True
 )
